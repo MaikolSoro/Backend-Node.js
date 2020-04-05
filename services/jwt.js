@@ -1,43 +1,45 @@
-const jwt =  require("jwt-simple");
-const  moment = require("moment");
+const jwt = require("jwt-simple");
+const moment = require("moment");
 
-const SECRET_KEY = "gR7cH9Svf9klgjasnjwin1u3v2";
+const SECRET_KEY = "gR7cH9Svfj8JLe4c186Ghs48hheb3902nh5DsA";
 
 
 /*-----------------------------*/
 /* Genero el token del usuario */
 /*-----------------------------*/
 exports.createAccessToken = function(user) {
+  const payload = {
+    id: user._id,
+    name: user.name,
+    lastname: user.lastname,
+    email: user.email,
+    role: user.role,
+    createToken: moment().unix(),
+    exp: moment()
+      .add(3, "hours")
+      .unix()
+  };
 
-    const payload = {
-        id: user._id,
-        name:user.name,
-        lastname: user.lastname,
-        email: user.email,
-        role: user.role,
-        createToken: moment().unix(), 
-        exp: moment().add(3,"hours").unix()
-
-    };
-
-    return jwt.encode(payload, SECRET_KEY);
+  return jwt.encode(payload, SECRET_KEY);
 };
 
 /*-----------------------------*/
 /* Refresco el token */
 /*-----------------------------*/
 exports.createRefreshToken = function(user) {
+  const payload = {
+    id: user._id,
+    exp: moment()
+      .add(30, "days")
+      .unix()
+  };
 
-    const payload = {
-        id: user._id,
-        exp: moment().add(30,"days").unix()
-    };
-    return jwt.encode(payload,SECRET_KEY);
+  return jwt.encode(payload, SECRET_KEY);
 };
 
 /*-----------------------------*/
 /* Descodefica cualquier de los dos tokens */
 /*-----------------------------*/
-exports.decodeToken = function(token) {
-    return jwt.encode(token, SECRET_KEY, true);
-}
+exports.decodedToken = function(token) {
+  return jwt.decode(token, SECRET_KEY, true);
+};

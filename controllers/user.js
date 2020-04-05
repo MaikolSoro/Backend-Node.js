@@ -1,7 +1,8 @@
+// const fs = require("fs");
+// const path = require("path");
 const bcrypt = require("bcrypt-nodejs");
 const jwt = require("../services/jwt");
 
-// importamos el modelo
 const User = require("../models/user");
 
 
@@ -15,9 +16,9 @@ function signUp(req, res) {
   user.name = name;
   user.lastname = lastname;
   user.email = email.toLowerCase();
-  user = role = "admin";
+  user.role = "admin";
   user.active = false;
-  
+
   if (!password || !repeatPassword) {
     res.status(404).send({ message: "Las contraseñas son obligatorias." });
   } else {
@@ -26,7 +27,9 @@ function signUp(req, res) {
     } else {
       bcrypt.hash(password, null, null, function(err, hash) {
         if (err) {
-          res.status(500).send({ message: "Error al encriptar la contraseña" });
+          res
+            .status(500)
+            .send({ message: "Error al encriptar la contraseña." });
         } else {
           user.password = hash;
 
@@ -35,9 +38,9 @@ function signUp(req, res) {
               res.status(500).send({ message: "El usuario ya existe." });
             } else {
               if (!userStored) {
-                res.status(404).send({ message: "Error al crear usuario." });
+                res.status(404).send({ message: "Error al crear el usuario." });
               } else {
-                res.status(200).send({ message: "Usuario creado" });
+                res.status(200).send({ user: userStored });
               }
             }
           });
@@ -47,44 +50,45 @@ function signUp(req, res) {
   }
 }
 
+
 /*-----------------------------*/
 /* Iniciar sección y generar el token */
 /*-----------------------------*/
-function signIn(req, res){
-  console.log("Login correcto");
-
-  const params  = req.body;
-  const email  = params.email.toLowerCase();
+function signIn(req, res) {
+  const params = req.body;
+  const email = params.email.toLowerCase();
   const password = params.password;
 
-  User.findOne({email},  (err, userStored) => {
-    if(err){
-      res.status(500).send({message:"Error del servidor."});
+  User.findOne({ email }, (err, userStored) => {
+    if (err) {
+      res.status(500).send({ message: "Error del servidor." });
     } else {
-      if(!userStored) {
-        res.status(404).send({message: "Usuario no encontrado."});
+      if (!userStored) {
+        res.status(404).send({ message: "Usuario no encontrado." });
       } else {
-        bcrypt.compare(password, userStored, password, (err, check) => {
-          if(err) {
-            res.status(500).send({message: "Error del servidor."});
-          } else if (!check){
-            res.status(404).send({message: "La contraseña es incorrecta"});
-          } 
-          else {
-            if(!userStored.active){
-              res.status(200).send({code: 200, message: "El usuario no se ha activado."});
-            }else {
-              res.status(200).send({accesToken: jwt.createAccessToken(userStored), 
-                                    refrshToken: jwt.createRefreshToken(userStored) 
+        bcrypt.compare(password, userStored.password, (err, check) => {
+          if (err) {
+            res.status(500).send({ message: "Error del servidor." });
+          } else if (!check) {
+            res.status(404).send({ message: "La contraseña es incorrecta." });
+          } else {
+            if (!userStored.active) {
+              res
+                .status(200)
+                .send({ code: 200, message: "El usuario no se ha activado." });
+            } else {
+              res.status(200).send({
+                accessToken: jwt.createAccessToken(userStored),
+                refreshToken: jwt.createRefreshToken(userStored)
               });
             }
           }
         });
       }
     }
-  });   
-
+  });
 }
+
 module.exports = {
   signUp,
   signIn
