@@ -89,7 +89,23 @@ function signIn(req, res) {
   });
 }
 
+/*-----------------------------*/
+/* Obtengo los usuarios que se encuentran en el sistema */
+/*-----------------------------*/
+function getUsers(req, res){
+  // console.log("Get");
+  User.find().then(users => {
+    if(!users){
+       res.status(404).send({
+        message:"No se ha encontrado ningun usuario."
+      });
+    } else {
+      res.status(200).send({ users });
+    }
+  })
+}
 module.exports = {
   signUp,
-  signIn
+  signIn,
+  getUsers
 };
