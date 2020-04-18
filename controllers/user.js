@@ -1,11 +1,8 @@
-// const fs = require("fs");
-// const path = require("path");
-const bcrypt = require("bcrypt-nodejs");
-const jwt = require("../services/jwt");
 const fs = require("fs");
 const path = require("path");
+const bcrypt = require("bcrypt-nodejs");
+const jwt = require("../services/jwt");
 const User = require("../models/user");
-
 
 /*-----------------------------*/
 /* Se crea el usuario */
@@ -132,15 +129,16 @@ function uploadAvatar(req, res) {
       if (!userData) {
         res.status(404).send({ message: "Nose ha encontrado ningun usuario." });
       } else {
-        let user = userData;
+        let user = userData; // el usuario que nos ha llegado
 
         if (req.files) {
           let filePath = req.files.avatar.path;
-          let fileSplit = filePath.split("/");
-          let fileName = fileSplit[2];
-
+          let fileName = filePath.replace(/^.*[\\\/]/, "");
+          //  let fileSplit = filePath.split("/");
+          // let fileName = fileSplit[2];
           let extSplit = fileName.split(".");
           let fileExt = extSplit[1];
+
 
           if (fileExt !== "png" && fileExt !== "jpg") {
             res.status(400).send({
@@ -161,7 +159,7 @@ function uploadAvatar(req, res) {
                       .status(404)
                       .send({ message: "No se ha encontrado ningun usuario." });
                   } else {
-                    res.status(200).send({ avatarName: fileName });
+                    res.status(200).send({ user: userResult });
                   }
                 }
               }
