@@ -96,14 +96,12 @@ function signIn(req, res) {
 function getUsers(req, res){
   // console.log("Get");
   User.find().then(users => {
-    if(!users){
-       res.status(404).send({
-        message:"No se ha encontrado ningun usuario."
-      });
+    if (!users) {
+      res.status(404).send({ message: "No se ha encontrado ningun usuario." });
     } else {
       res.status(200).send({ users });
     }
-  })
+  });
 }
 
 /*-----------------------------*/
@@ -112,15 +110,13 @@ function getUsers(req, res){
 function getUsersActive(req, res) {
   const query = req.query;
 
-  User.find({active: query.active}).then(users => {
-  if(!users){
-    res.status(404).send({
-      message: "No se ha activado"
-    });
-  } else {
-    res.status(200).send({users});
-  }
-})
+  User.find({ active: query.active }).then(users => {
+    if (!users) {
+      res.status(404).send({ message: "No se ha encontrado ningun usuario." });
+    } else {
+      res.status(200).send({ users });
+    }
+  });
 }
 
 /*-----------------------------*/
@@ -152,7 +148,7 @@ function uploadAvatar(req, res) {
                 "La extension de la imagen no es valida. (Extensiones permitidas: .png y .jpg)"
             });
           } else {
-            user.avatar = fileName; // añado el nombre de la imagen
+            user.avatar = fileName;
             User.findByIdAndUpdate(
               { _id: params.id },
               user,
@@ -196,23 +192,34 @@ function getAvatar(req, res) {
 /*-----------------------------*/
 /* Actualizar usuario */
 /*-----------------------------*/
-function updateUser(req, res) {
-    const userData = req.body;
-    const params =  req.params;
+async function updateUser(req, res) {
+  let userData = req.body;
+  userData.email = req.body.email.toLowerCase();
+  const params = req.params;
 
-    User.findByIdAndUpdate({_id: params.id }, userData, userData, (err, userUpdate) => {
-      if(err) {
-        res.status(500).send({message: "Error del servidor"});
-
-      }else {
-        if(!userUpdate) {
-          res.status(404).send({message: "No se ha encontado ningun usuario."});
-        } else {
-          res.status(200).send({message: "Usuario actualizado correctamente."});
-        }
+  if (userData.password) {
+    await bcrypt.hash(userData.password, null, null, (err, hash) => {
+      if (err) {
+        res.status(500).send({ message: "Error al encriptar la contraseña." });
+      } else {
+        userData.password = hash;
       }
     });
-  // console.log(userData);
+  }
+
+  User.findByIdAndUpdate({ _id: params.id }, userData, (err, userUpdate) => {
+    if (err) {
+      res.status(500).send({ message: "Error del servidor." });
+    } else {
+      if (!userUpdate) {
+        res
+          .status(404)
+          .send({ message: "No se ha encontrado ningun usuario." });
+      } else {
+        res.status(200).send({ message: "Usuario actualizado correctamente." });
+      }
+    }
+  });
 }
 module.exports = {
   signUp,

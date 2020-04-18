@@ -3,6 +3,7 @@ const app = require("./app");
 const port = process.env.PORT || 3977;
 const { API_VERSION, IP_SERVER, PORT_DB } = require("./config");
 
+// Usamos el método connect para conectarnos a nuestra base de datos
 mongoose.set("useFindAndModify", false);
 mongoose.connect(
   `mongodb://${IP_SERVER}:${PORT_DB}/web`,
