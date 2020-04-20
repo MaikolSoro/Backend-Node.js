@@ -1,4 +1,5 @@
 const express = require("express");
+'use strict'
 const UserController = require("../controllers/user");
 const multipart = require("connect-multiparty");
 const md_auth = require("../middleware/authenticated");

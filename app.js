@@ -10,6 +10,7 @@ const { API_VERSION } = require('./config');
 
 const userRoutes = require('./router/user');
 const authRoutes = require('./router/auth');
+const menuRoutes = require('./router/menu');
 //..
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -28,7 +29,12 @@ app.use((req, res, next) => {
   });
 //....
 
-// router Basic
+// router Basic / rutas de usuarios
 app.use(`/api/${API_VERSION}`,userRoutes);
 app.use(`/api/${API_VERSION}`,authRoutes);
+
+//Rutas de menu
+
+app.use(`/api/${API_VERSION}`,menuRoutes);
+
 module.exports = app;
