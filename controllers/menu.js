@@ -62,7 +62,7 @@ function updateMenu(req, res) {
       if(!menuUpdate) {
         res.status(404).send({ message: "No se ha encontrado ningun menu"});
       } else {
-        res.status(200).send({ message: "Menu actualizado correctamente"});
+        res.status(200).send({ message: "Menú actualizado correctamente"});
       }
     }
   });
@@ -91,9 +91,31 @@ function activateMenu(req, res) {
     }
   });
 }
+
+/*-----------------------------*/
+/* Borrar menú */
+/*-----------------------------*/
+
+function deleteMenu(req , res) {
+ const { id } = req.params;
+
+ Menu.findByIdAndRemove(id, (err,  menuDeleted) => {
+  if(err) {
+    re.status(500).send({message: "Error del servidor."});
+  } else {
+    if(!menuDeleted) {
+      res.status(404).send({ message: "Menú no encontrado."});
+    } else {
+      res.status(200).send({
+        message: "El menú ha sido eliminado correctamente"});
+    }
+  }
+ });
+}
 module.exports = {
     addMenu,
     getMenus,
     updateMenu,
-    activateMenu
+    activateMenu,
+    deleteMenu
 };
