@@ -70,8 +70,30 @@ function updatePost(req , res) {
     });
 
 }
+
+/*-----------------------------*/
+/* Eliminar post por el id */
+/*-----------------------------*/
+function deletePost(req , res) {
+    const {id} = req.params;
+
+    Post.findByIdAndRemove(id, (err, postDeleted) => {
+
+        if(err) {
+            res.status(500).send({ code: 500, message: "Error del servidor."});
+        } else {
+            if(!postDeleted) {
+            res.status(404).send({ code: 404, message: "Post no encontrado."});
+            } else {
+            res.status(200).send({ code: 200, message: "El post ha sido eliminado correctamente."});
+            }
+        }
+    });
+
+}
 module.exports = {
     addPost,
     getPosts,
-    updatePost
+    updatePost,
+    deletePost
 }
