@@ -12,6 +12,7 @@ const userRoutes = require('./router/user');
 const authRoutes = require('./router/auth');
 const menuRoutes = require('./router/menu');
 const newsletterRoutes = require('./router/newsletter');
+const postRoutes = require('./router/post');
 //..
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -40,4 +41,8 @@ app.use(`/api/${API_VERSION}`,menuRoutes);
 
 // rutas newsletter
 app.use(`/api/${API_VERSION}`,newsletterRoutes);
+
+// rutas de post
+app.use(`/api/${API_VERSION}`,postRoutes);
+
 module.exports = app;
