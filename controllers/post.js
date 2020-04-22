@@ -47,7 +47,31 @@ function getPosts(req, res) {
         }
     });
 }
+
+/*-----------------------------*/
+/* Actualizar posts */
+/*-----------------------------*/
+function updatePost(req , res) {
+
+    const postData = req.body;
+    const { id } = req.params;
+
+    Post.findByIdAndUpdate(id, postData, (err, postUpdate) => {
+
+        if(err) {
+            res.status(500).send({ code: 500 , message: "Error del servidor."});
+        } else {
+            if(!postUpdate) {
+                res.status(404).send({ code: 404, message: "No se ha encontrado  ningun post."});
+            } else {
+                res.status(200).send({ code: 200, message: "Post actualizado correctamente."});
+            }
+        }
+    });
+
+}
 module.exports = {
     addPost,
-    getPosts
+    getPosts,
+    updatePost
 }
