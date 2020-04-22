@@ -23,6 +23,31 @@ function addPost(req, res) {
     });
 }
 
+/*-----------------------------*/
+/* Obtner todos los post  */
+/*-----------------------------*/
+function getPosts(req, res) {
+    const {page, limit} = req.query;
+
+    const options = {
+        page: page,
+        limit: parseInt(limit),
+        sort: { date: "desc"}
+    };
+
+    Post.paginate({}, options, (err, postsStored) => {
+        if(err) {
+            res.status(500).send({ code: 500, message: "Error del servidor"});
+        } else {
+            if(!postsStored) {
+                res.status(404).send({ code: 404, message: "No se ha encontrado  ningun post."});
+            } else {
+                res.status(200).send({ code: 200, posts: postsStored });
+            }
+        }
+    });
+}
 module.exports = {
-    addPost
+    addPost,
+    getPosts
 }
